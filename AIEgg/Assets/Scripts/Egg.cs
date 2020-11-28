@@ -57,6 +57,7 @@ public class Egg : MonoBehaviour
     private Rigidbody rb;
     private GameObject target;
     private NavMeshAgent agent;
+    private Console console;
 
     // Start is called before the first frame update
     private void Start()
@@ -64,8 +65,8 @@ public class Egg : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         target = FindObjectOfType<Voreable>().gameObject;
         agent = GetComponent<NavMeshAgent>();
+        console = FindObjectOfType<Console>();
 
-        
         StartCoroutine(PathToPoint());
         
     }
@@ -85,10 +86,16 @@ public class Egg : MonoBehaviour
             RandomPointOnNavMesh randomPointOnNavMesh = new RandomPointOnNavMesh();
             randomPointOnNavMesh.RandomPoint(transform.position, range, out point);
             if (target != null) agent.destination = point;
-            print(point.ToString());
+            PrintToConsoleAndGUI(point);
 
             yield return new WaitForSeconds(5);
         }
+    }
+
+    private void PrintToConsoleAndGUI<T>(T whatever)
+    {
+        print(whatever.ToString());
+        console.UpdateGUI(whatever.ToString());
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -98,12 +105,6 @@ public class Egg : MonoBehaviour
             agent.destination = Vector3.zero;
             Destroy(target);
         }
-    }
-
-    // Print to Console
-    private void PrintAction(string action)
-    {
-        print(action);
     }
 }
 
@@ -125,44 +126,3 @@ public class RandomPointOnNavMesh
         return false;
     }
 }
-
-/*
- private void OldMoveLogic()
-    {
-        Vector3 moveDirection = Vector3.zero;
-        Action actionTask;
-
-        actionTask = Action.Move;
-
-        switch (actionTask)
-        {
-            case Action.Move:
-
-                switch (this.moveDirection)
-                {
-                    case MoveDir.Forward:
-                        moveDirection = Vector3.forward;
-                        break;
-
-                    case MoveDir.Left:
-                        moveDirection = Vector3.left;
-                        break;
-
-                    case MoveDir.Right:
-                        moveDirection = Vector3.right;
-                        break;
-
-                    case MoveDir.Backwards:
-                        moveDirection = Vector3.back;
-                        break;
-                }
-
-                this.transform.Translate(moveDirection * Time.deltaTime);
-                PrintAction("Move" + moveDirection.ToString());
-                break;
-
-            default:
-                break;
-        }
-    } 
- */
